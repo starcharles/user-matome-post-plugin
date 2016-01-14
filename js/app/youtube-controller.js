@@ -11,9 +11,8 @@
 //	//$logProvider.debugEnabled(true);
 //});
 
-//angular.module('app').controller('youtubeController', function ($scope) {
 app.controller('youtubeController', function ($scope) {
-   $scope.theBestVideo = 'sMKoNBRZM1M';
+   //$scope.theBestVideo = 'sMKoNBRZM1M';
 	$scope.hideYoutube=true;
 	$scope.items = [];
 
