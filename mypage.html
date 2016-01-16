@@ -1,0 +1,182 @@
+<div ng-app="UserPosts">
+    <div ng-controller="mainController">
+
+        <div ng-if="isAuthenticated()"></div>
+        <nav ng-controller="postController" class="navbar navbar-default">
+            <div class="navbar-header">
+                <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+                <button type="button" class="btn btn-default navbar-btn">プレビュー</button>
+                <button type="button" ng-click="sendPost('draft',items)" class="btn btn-default navbar-btn">下書き
+                </button>
+                <button type="button" ng-click="sendPost('publish',items)" class="btn btn-default navbar-btn">投稿する
+                </button>
+                <!--<div class="dropdown">-->
+                    <!--<button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"-->
+                            <!--aria-haspopup="true" aria-expanded="true">-->
+                        <!--記事一覧-->
+                        <!--<span class="caret"></span>-->
+                    <!--</button>-->
+                    <!--<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">-->
+                        <!--<li><a href="#">保存した下書き</a></li>-->
+                        <!--<li><a href="#">投稿した記事</a></li>-->
+                        <!--<li><a href="#">Something else here</a></li>-->
+                        <!--<li role="separator" class="divider"></li>-->
+                        <!--<li><a href="#">Separated link</a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+            </div>
+        </nav>
+        <div class="container">
+            <div class="options">カテゴリー</div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3">
+                    <div class="img-attach" ng-controller="imgController">
+                        画像貼り付け
+                        <input type="file" file-model="imageFile"/>
+                        <br/>
+                        <img ng-if="imageFileSrc"
+                             ng-src="{{imageFileSrc}}"
+                             style="max-width: 260px"/>
+                    </div>
+                </div>
+                <div class="wrapper col-md-6">
+                    <div class="title">
+                        まとめタイトル
+                        <br/>
+                        <input type="text" placeholder="まとめのタイトルを入力"/>
+                    </div>
+                    <div class="desc">
+                        <br/>
+                        <textarea name="desc" cols="55" rows="4" placeholder="まとめの説明を入力"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <button class="btn btn-success">設定する</button>
+            </div>
+        </div>
+        <div ng-controller="tabController">
+            <uib-tabset class="tab-area">
+                <uib-tab heading="テキスト">
+                    <div class="text-area">
+                        <p>テキストを入力</p>
+                        <textarea name="text" cols="80" rows="10" ng-model="content.text"></textarea>
+
+                        <div class="button-area">
+                            <button class="btn btn-default" type="submit" ng-disabled="!content.text"
+                                    ng-click="addItem('text',content.text);" ng-disabled="!text">追加
+                            </button>
+                            <button class="btn btn-default" type="button" ng-click="cancel();">キャンセル</button>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="引用">
+                    <p>引用</p>
+                    <textarea name="text" cols="80" rows="10" ng-model="content.citationText"></textarea>
+
+                    <div class="button-area">
+                        <button class="btn btn-default" type="submit" ng-disabled="!content.citationText"
+                                ng-click="addItem('citation',content.citationText);" ng-disabled="!citationText">追加
+                        </button>
+                        <button class="btn btn-default" type="button" ng-click="cancel();">キャンセル</button>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Youtube">
+                    <div class="add_movie" ng-controller="youtubeController">
+                        <div>Youtube 動画埋め込み</div>
+                        <div id="link_url_area">
+                            <input placeholder="追加する動画のURLを入力 (youtubeのみ対応しています)" type="text" class="search_url"
+                                   ng-model="content.youtubeUrl">
+
+                            <div>例：https://www.youtube.com/watch?v=NuNvCOUy1Ts</div>
+                            <div class="add_btArea clearfix">
+                                <button type="button" ng-click="check(content.youtubeUrl);"
+                                        ng-disabled="!content.youtubeUrl"
+                                        value="チェック"
+                                        class="btn btn-success">チェック
+                                </button>
+                                <button type="button" ng-click="cancel();" class="btn btn-default">キャンセル</button>
+                            </div>
+                            <div ng-show="!hideYoutube">
+                                <youtube-video video-url="youtubeUrl"></youtube-video>
+                                <div class="text">コメント入力欄</div>
+                                <div class="comment">
+                            <textarea name="comment" ng-model="content.text" id="movie_comment" cols="40"
+                                      rows="10"></textarea>
+                                </div>
+                                <button type=button ng-click="addItem('youtube',content);" class="btn btn-success">
+                                    追加する
+                                </button>
+                                <button type=button ng-click="cancel();" class="btn btn-default">キャンセル</button>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="見出し">
+                    <div class="headline">
+                        <p>見出しを入力</p>
+                        <textarea name="text" cols="80" rows="1" ng-model="content.headline"></textarea>
+
+                        <h2 style="text-decoration: underline ; color:pink;">{{content.headline}}</h2>
+
+                        <div class="button-area">
+                            <button class="btn btn-default" type="submit" ng-disabled="!content.headline"
+                                    ng-click="addItem('headline',content);" ng-disabled="!content.headline">追加
+                            </button>
+                            <button class="btn btn-default" type="button" ng-click="cancel();">キャンセル</button>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="リンク">
+                    <div class="link-area">
+                        <p>リンクを入力</p>
+                        <input type="text" rows="1" ng-model="content.link"/>
+
+                        <div class="button-area">
+                            <button class="btn btn-default" type="submit" ng-disabled="!content.link"
+                                    ng-click="addItem('link',content);" ng-disabled="!content.link">追加
+                            </button>
+                            <button class="btn btn-default" type="button" ng-click="cancel();">キャンセル</button>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Amazon">
+                    <p>Amazon</p>
+                    <!--<input type="text" rows="1" ng-model="content.link"/>-->
+                    <!--<div class="button-area">-->
+                    <!--<button class="btn btn-default" type="submit" ng-disabled="!content.link"-->
+                    <!--ng-click="addItem('link',content);" ng-disabled="!content.link">追加-->
+                    <!--</button>-->
+                    <!--<button class="btn btn-default" type="button" ng-click="cancel();">キャンセル</button>-->
+                    <!--</div>-->
+                </uib-tab>
+            </uib-tabset>
+            <div class="content items-view" ng-controller="itemsViewController">
+                <div class="item-view" >
+                    <h3>追加された要素</h3>
+                    <ul class="items list-group col-md-9" ng-repeat="item in items">
+                        <li class="list-group-item">
+                            <div class="box-container">
+                                <div class="box box-{{$index+1}}">
+                                    <div class="{{item.type}} post">
+                                        <div class="item-type">投稿タイプ：{{item.type}}</div>
+                                        <div class="item-content">投稿内容：{{item.content}}</div>
+                                    </div>
+                                    <div class="events">
+                                        <div class="btn btn-defalt" ng-click="editItem($index)">編集する</div>
+                                        <div class="btn btn-defalt" ng-click="deleteItem()">削除する</div>
+                                        <div class="btn btn-defalt" ng-click="moveItem()">上へ移動</div>
+                                        <div class="btn btn-defalt" ng-click="moveItem()">下へ移動</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

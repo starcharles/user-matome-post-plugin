@@ -1,1 +1,8 @@
-aa
+.idea/
+Gruntfile.js
+phpunit.xml
+package.json
+.editorconfig
+bin/
+vagrant.xml
+

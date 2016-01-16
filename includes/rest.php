@@ -6,18 +6,19 @@
  * Date: 16/01/12
  * Time: 19:21
  */
-
 class RestAPIEndPoint {
 
 	function __construct() {
-		// カスタム投稿タイプを定義
-		add_action( 'init', 'register_custom_post_type' );
-
+		// カスタム投稿タイプを追加
+		add_action( 'init', array($this,'add_custom_post_type'),30 );
 	}
 
-
 	//create new Endpoint for WP REST API
-	function register_custom_post_type() {
+	function add_custom_post_type() {
+
+		global $wp_post_types;
+
+		//be sure to set this to the name of your post type!
 		$post_type = 'user-post';
 
 		$labels = array(
@@ -36,27 +37,25 @@ class RestAPIEndPoint {
 		);
 
 		$args = array(
-			'labels'                => $labels,
-			'description'           => __( 'Description.', 'ユーザー投稿専用' ),
-			'public'                => true,
-			'publicly_queryable'    => true,
-			'show_ui'               => true,
-			'show_in_menu'          => true,
-			'query_var'             => true,
-			'rewrite'               => array( 'slug' => 'userpost' ),
-			'capability_type'       => 'post',
-			'has_archive'           => true,
-			'hierarchical'          => false,
-			'menu_position'         => null,
-			'show_in_rest'          => true,
-			'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
-//        'rest_base'          => 'user-posts',
-//			'rest_controller_class' => 'WP_REST_Posts_Controller',
-
+			'labels'             => $labels,
+			'description'        => __( 'Description.', 'ユーザー投稿専用' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => true,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'userpost' ),
+			'capability_type'    => 'post',
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'show_in_rest'       => true,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
 		);
 
-		register_post_type( $post_type, $args );
+		if( !isset( $wp_post_types[ $post_type] ) ) {
+			register_post_type( $post_type, $args );
+		}
 	}
 }
-
 

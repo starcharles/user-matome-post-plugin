@@ -1,28 +1,36 @@
-/* jshint undef: true, unused: true, latedef: true */
+/* jshint undef: true, unused: true */
 /* jshint quotmark: single, eqeqeq: true, camelcase: true */
-/* jshint devel: true, globalstrict: true */
+/* jshint node: true , latedef: nofunc */
 
 /* global angular */
-'use strict';
+(function() {
+	'use strict';
+	//var app = angular.module('UserPosts', ['ngResource', 'ngSanitize', 'ngMockE2E', 'ui.bootstrap', 'youtube-embed']);
+	var app = angular.module('UserPosts', ['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed']);
 
-var app=angular.module('app', ['ui.bootstrap','youtube-embed']);
-	//.controller('tabController',function($scope){
-app.controller('tabController',function($scope){
-	$scope.content={text:""}
-	$scope.items=[];
+	app.config(function($httpProvider) {
+		//ヘッダーにCSRF対策用のnonceを設定
+		$httpProvider.defaults.headers.common = {
+			'X-WP-Nonce': wpAngularVars.nonce
+		};
+	});
 
-	$scope.cancel = function () {
-		$scope.content={};
-	};
+	app.run(function($rootScope) {
+		//
+		//isLoggedIn;
+		//isAuth=true or false;
+		//userResource.get({
+		//	id: 'myself'
+		//}, function(data) {
+		//	$rootScope.myself = data;
+		//});
+	});
 
-	$scope.addItem=function(type,content,user){
-		if(!content) return;
-		$scope.items.push({
-			type:type,
-			content:content
-		});
-		$scope.content={};
-		//console.log($scope.items);
-	};
-});
-
+	app.controller('mainController', mainController);
+	function mainController($scope) {
+		var vm = $scope;
+		//variables
+		vm.content = {};
+		vm.items = [];
+	}
+})();
