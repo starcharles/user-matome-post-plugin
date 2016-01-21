@@ -3,72 +3,94 @@
 /* jshint node: true , latedef: nofunc */
 
 /* global angular */
-(function() {
-	'use strict';
+(function () {
+    'use strict';
 
-	var app = angular.module('UserPosts');
+    var app = angular.module('UserPosts');
 
 
-	app.controller('postController', function($scope, wpPostResource) {
-		//スコープを変数に代入
-		var vm = $scope;
+    app.controller('postController', function ($scope, wpPostResource, wpPostMeta) {
+        //スコープを変数に代入
+        var vm = $scope;
 
-		//メソッド一覧
-		vm.getPosts = getPosts;
-		vm.sendPost = sendPost;
-		vm.updatePost = updatePost;
-		vm.deletePost = deletePost;
+        //メソッド一覧
+        vm.getPosts = getPosts;
+        vm.sendPost = sendPostTest;
+        vm.updatePost = updatePost;
+        vm.deletePost = deletePost;
 
-		function getPosts() {
-			wpPostResource.query({}, function(data) {
-				vm.posts = data;
-			});
-		}
+        function getPosts() {
+            wpPostResource.query({}, function (data) {
+                vm.posts = data;
+                console.log(data);
+            });
+        }
 
-		function sendPost(status, items) {
-			//入力チェック
-			//if (items.length === 0) return;
+        function sendPostTest(status, items) {
+            //入力チェック
+            if (items.length === 0) return;
 
-			console.log('send post');
-			console.log(vm.items);
-			wpPostResource.save({
-				title: 'test',
-				content: 'matome-test', //jshint ignore:line
-				status: status
-			}, function(result) {
-				console.log(result);
-			});
-			//var items=vm.items;
-			//var items=[{type:'text',content:'meta-test'}];
+            console.log('send post');
+            console.log(vm.items);
+
+            var items = vm.items;
+            var post_id;
+
+            //var post;
+            //items.forEach(function (item){
             //
-			//wpPostResource.save({
-			//	key: items[0].type,
-			//	value: items[0].content, //jshint ignore:line
-			//}, function(result) {
-			//	console.log(result);
-			//});
-		}
+            //});
+            //create new Post
+            wpPostResource.save({
+                status: status,
+                title: 'カスタムフィールドテスト',
+                content: 'テスト', //jshint ignore:line
+            }, function (result) {
+                //get post_id from response
+                post_id = result.id;
+                console.log(result.id);
 
-		function updatePost() {
-		}
-		function deletePost() {
-		}
+                items.forEach(function (item){
+                    wpPostMeta.save({
+                        id: post_id,
+                        //id: 283,
+                        key: item.type,
+                        value: item.content,
+                    }, function (result) {
+                        console.log(result);
+                    });
+                });
+            });
+        }
 
-	});
+        function updatePost() {
+        }
 
-	app.factory('wpPostResource', function($resource) {
-		var resource = 'http://192.168.33.10';
-		return $resource(resource + '/wp-json/wp/v2/user-post');
-		//return $resource(resource + '/wp-json/wp/v2/posts');
-		//return $resource(resource + '/wp-json/wp/v2/posts/268/meta');
-	});
+        function deletePost() {
+        }
 
-	//入力のチェック、バリデーション
-	app.factory('checkInputs', function() {
-		//return $resource('http://192.168.33.10/wp-json/wp/v2/posts');
-		return {
-			check: function() {
-			}
-		};
-	});
-})();
+    });
+
+        app.factory('wpPostResource', function ($resource) {
+            var resource = 'http://192.168.33.10';
+            return $resource(resource + '/wp-json/wp/v2/user-post');
+            //return $resource(resource + '/vender/v1/route');
+            //return $resource(resource + '/wp-json/rela/v1/user-post');
+            //return $resource(resource + '/wp-json/rela/v1/user-post');
+            //return $resource(resource + '/wp-json/wp/v2/posts/268/meta');
+        });
+
+        app.factory('wpPostMeta', function ($resource) {
+            var resource = 'http://192.168.33.10';
+            return $resource(resource + '/wp-json/wp/v2/user-post/:id/meta',{id:'@id'});
+            //return $resource(resource + '/wp-json/wp/v2/posts/:id/meta',{id:'@id'});
+        });
+        //入力のチェック、バリデーション
+        app.factory('checkInputs', function () {
+            //return $resource('http://192.168.33.10/wp-json/wp/v2/posts');
+            return {
+                check: function () {
+                }
+            };
+        });
+    })();

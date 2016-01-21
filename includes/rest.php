@@ -2,15 +2,19 @@
 
 /**
  * Created by PhpStorm.
- * User: ns
+ * User: Naoto Satoh
  * Date: 16/01/12
  * Time: 19:21
  */
+
+define( 'POST_TYPE', 'user-post' );
+
 class RestAPIEndPoint {
 
 	function __construct() {
 		// カスタム投稿タイプを追加
-		add_action( 'init', array($this,'add_custom_post_type'),30 );
+		add_action( 'init', array( $this, 'add_custom_post_type' ), 30 );
+//		add_action( 'rest_api_init',array($this,'rest_api_settings'),60);
 	}
 
 	//create new Endpoint for WP REST API
@@ -19,7 +23,7 @@ class RestAPIEndPoint {
 		global $wp_post_types;
 
 		//be sure to set this to the name of your post type!
-		$post_type = 'user-post';
+		$post_type = POST_TYPE;
 
 		$labels = array(
 			'name'               => _x( 'まとめ', 'matome' ),
@@ -50,12 +54,28 @@ class RestAPIEndPoint {
 			'hierarchical'       => false,
 			'menu_position'      => null,
 			'show_in_rest'       => true,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt','custom-fields', 'comments' )
 		);
 
-		if( !isset( $wp_post_types[ $post_type] ) ) {
+		if ( ! isset( $wp_post_types[ $post_type ] ) ) {
 			register_post_type( $post_type, $args );
 		}
 	}
+
+	function get_post_query() {
+		//get query from client
+		//get post data(custom field)
+	}
+
+	function create_new_post() {
+		//create custom post
+		//create items
+
+	}
+
+
+
+
+
 }
 

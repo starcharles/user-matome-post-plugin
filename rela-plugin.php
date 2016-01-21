@@ -5,7 +5,7 @@
  * Description:This Plugin is made to build variable posting UI
  * Version: 0.0.1
  * Author: Naoto Satoh
- * Author URI: http://www.roysivan.com
+ * Author URI:
  * License: GPL2
  */
 
@@ -14,7 +14,9 @@ define( 'MYPAGE_CONTENT', '[rela-postpage]' );
 define( 'MYPAGE_POSTNAME', 'relaunch-mypage' ); //URL
 
 
-include_once( 'includes/rest.php' );
+require_once( 'includes/rest.php' );
+//require_once( 'includes/rest-controller.php');
+//require_once( 'includes/ex.php');
 
 
 class RelaPlugin {
@@ -29,9 +31,16 @@ class RelaPlugin {
 
 	}
 
+	/**
+ih	 *
+	 *
+	 *
+	 */
 	function set_script_dependencies() {
 		//ライブラリーファイル
-		wp_register_script( 'angular', plugin_dir_url( __FILE__ ) . ( 'js/lib/angular.min.js' ) );
+		wp_register_script( 'jquery', plugin_dir_url( __FILE__ ) . 'js/lib/jquery-1.12.0.min.js');
+
+		wp_register_script( 'angular', plugin_dir_url( __FILE__ ) . ( 'js/lib/angular.min.js' ),array('jquery') );
 		wp_register_script( 'angular-resource', plugin_dir_url( __FILE__ ) . 'js/lib/angular-resource.min.js', array( 'angular' ) );
 		wp_register_script( 'angular-sanitize', plugin_dir_url( __FILE__ ) . 'js/lib/angular-sanitize.min.js', array( 'angular' ) );
 		wp_register_script( 'angular-youtube', plugin_dir_url( __FILE__ ) . 'js/lib/angular-youtube-embed.js', array(
@@ -39,13 +48,16 @@ class RelaPlugin {
 			'angular-resource',
 			'angular-sanitize'
 		) );
+		wp_register_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'js/lib/jquery-ui/jquery-ui.min.js',array('jquery') );
 		wp_register_script( 'bootstrap', plugin_dir_url( __FILE__ ) . 'js/lib/bootstrap.min.js' );
 		wp_register_script( 'ui-bootstrap-tpls', plugin_dir_url( __FILE__ ) . 'js/lib/ui-bootstrap-tpls.min.js', array( 'bootstrap' ) );
+		wp_register_script( 'ui-sortable', plugin_dir_url( __FILE__ ) . 'js/lib/sortable.min.js');
 		wp_register_script( 'iframe-api', plugin_dir_url( __FILE__ ) . 'js/app/iframe_api.js' );
 
 		//コード
 		wp_register_script( 'main', plugin_dir_url( __FILE__ ) . 'js/app/main.js', array(
 			'ui-bootstrap-tpls',
+			'ui-sortable',
 			'angular-youtube'
 		) );
 		wp_register_script( 'post-controller', plugin_dir_url( __FILE__ ) . 'js/app/postController.js', array( 'main' ) );
@@ -57,12 +69,15 @@ class RelaPlugin {
 
 	function loadLibraries() {
 		//JS files
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'angular' );
 		wp_enqueue_script( 'angular-satitaize' );
 		wp_enqueue_script( 'angular-resource' );
 		wp_enqueue_script( 'angular-youtube' );
 		wp_enqueue_script( 'bootstrap' );
 		wp_enqueue_script( 'ui-bootstrap-tpls' );
+		wp_enqueue_script( 'ui-sortable' );
 		wp_enqueue_script( 'iframe_api' );
 
 		//AngularJS scripts
@@ -97,8 +112,12 @@ class RelaPlugin {
 	}
 
 	//shortcode to render inserted page views
+
+	/**
+	 * @return string
+	 */
 	function my_shortcode() {
-		$content = file_get_contents( plugin_dir_url( __FILE__ ) . 'mypage.html' );
+		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/view/mypage.html' );
 
 		return $content;
 	}
@@ -123,5 +142,7 @@ class RelaPlugin {
 
 
 new RelaPlugin();
-
-$Rest=new RestAPIEndPoint();
+new RestAPIEndPoint();
+//new Slug_Custom_Route();
+//$rest=new Rela_Rest_Controller();
+//$rest->register_routes();

@@ -2,21 +2,24 @@
 /* jshint quotmark: single, eqeqeq: true, camelcase: true */
 /* jshint node: true , latedef: nofunc */
 
-/* global angular */
+/* global angular,localStorage */
 (function() {
 	'use strict';
-	//var app = angular.module('UserPosts', ['ngResource', 'ngSanitize', 'ngMockE2E', 'ui.bootstrap', 'youtube-embed']);
-	var app = angular.module('UserPosts', ['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed']);
+
+	//var inject=['ngResource', 'ngSanitize', 'ngMockE2E', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
+	var inject=['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
+	var app = angular.module('UserPosts',inject);
 
 	app.config(function($httpProvider) {
 		//ヘッダーにCSRF対策用のnonceを設定
 		$httpProvider.defaults.headers.common = {
-			'X-WP-Nonce': wpAngularVars.nonce
+			'X-WP-Nonce': wpAngularVars.nonce //jshint ignore:line
 		};
 	});
 
 	app.run(function($rootScope) {
-		//
+		$rootScope.isLoggedIn=true;
+
 		//isLoggedIn;
 		//isAuth=true or false;
 		//userResource.get({
@@ -25,12 +28,24 @@
 		//	$rootScope.myself = data;
 		//});
 	});
-
 	app.controller('mainController', mainController);
+	/**
+	 *
+	 * @param $scope
+	 */
 	function mainController($scope) {
 		var vm = $scope;
-		//variables
 		vm.content = {};
 		vm.items = [];
+
+		vm.setLocalStore=setLocalStore;
+		vm.getLocalStore=getLocalStore;
+
+		function setLocalStore(items){
+			localStorage.setItem("items-mypage", JSON.stringify(items));
+		}
+		function getLocalStore(){
+			vm.items= JSON.parse(localStorage.getItem("items-mypage"));
+		}
 	}
 })();

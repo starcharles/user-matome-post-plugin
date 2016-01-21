@@ -7,7 +7,13 @@
 
 	//youtubeのタブのコントローラー
 	angular.module('UserPosts')
-		.controller('youtubeController', function($scope, youtubeEmbedUtils) {
+		.controller('youtubeController',youtubeController);
+	/**
+	 *
+	 * @param $scope
+	 * @param youtubeEmbedUtils
+	 */
+	function youtubeController($scope, youtubeEmbedUtils) {
 			var ytb = youtubeEmbedUtils;
 			$scope.hideYoutube = true;
 
@@ -31,5 +37,5 @@
 				$scope.$parent.content = {};
 				$scope.hideYoutube = true;
 			};
-		});
+		}
 })();
