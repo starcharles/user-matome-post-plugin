@@ -12,20 +12,9 @@
 	function tabController($scope) {
 		var vm = $scope;
 
-		//グローバル変数 content,items
-
-
 		//タブ領域のメソッド
 		vm.addItem = addItem;
 		vm.cancel = cancel;
-
-
-		//追加された要素内のメソッド
-		//vm.deleteItem = deleteItem;
-		//vm.updateItem = updateItem;
-		//vm.editItem = updateItem;
-		//vm.moveItem = updateItem;
-
 
 		function cancel() {
 			vm.content = {};

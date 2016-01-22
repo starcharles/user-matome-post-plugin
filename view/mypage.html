@@ -1,59 +1,63 @@
 <div ng-app="UserPosts">
-    <div ng-controller="mainController">
+    <div ng-controller="mainController as main">
         <div ng-if="isAuthenticated()"></div>
-        <nav ng-controller="postController" class="navbar navbar-default">
-            <div class="navbar-header">
-                <button type="button" class="btn btn-default navbar-btn">Sign in</button>
-                <button type="button" class="btn btn-default navbar-btn">プレビュー</button>
-                <button type="button" ng-click="sendPost('draft',content)" class="btn btn-default navbar-btn">下書き
-                </button>
-                <button type="button" ng-click="sendPost('publish',content)" class="btn btn-default navbar-btn">投稿する
-                </button>
-                <button type="button" ng-click="setLocalStore(items)" class="btn btn-default navbar-btn">setLocalstore
-                </button>
-                <button type="button" ng-click="getLocalStore()" class="btn btn-default navbar-btn">getLocalstore
-                </button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        記事一覧
-                        <span class="caret"></span>
+        <div ng-controller="postController as post">
+            <nav class="navbar navbar-default">
+                <div class="navbar-header">
+                    <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+                    <button type="button" class="btn btn-default navbar-btn">プレビュー</button>
+                    <button type="button" ng-click="sendPost('draft',content)" class="btn btn-default navbar-btn">下書き
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="#">保存した下書き</a></li>
-                        <li><a href="#">投稿した記事</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="container">
-            <!--<div class="options">カテゴリー</div>-->
-            <div class="row">
-                <!--<div class="col-md-2"></div>-->
-                <div class="col-md-3">
-                    <div class="img-attach" ng-controller="imgController">
-                        画像貼り付け
-                        <input type="file" file-model="imageFile"/>
-                        <br/>
-                        <img ng-if="imageFileSrc"
-                             ng-src="{{imageFileSrc}}"
-                             style="max-width: 260px"/>
+                    <button type="button" ng-click="sendPost('publish',content)" class="btn btn-default navbar-btn">投稿する
+                    </button>
+                    <button type="button" ng-click="setLocalStore(items)" class="btn btn-default navbar-btn">
+                        setLocalstore
+                    </button>
+                    <button type="button" ng-click="getLocalStore()" class="btn btn-default navbar-btn">getLocalstore
+                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            ページ切り替え
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="#">投稿記事一覧ページ</a></li>
+                            <li><a href="#">プレビュー</a></li>
+                        </ul>
                     </div>
                 </div>
-                <div class="wrapper col-md-6">
-                    <div class="title">
-                        まとめタイトル
-                        <br/>
-                        <input type="text" placeholder="まとめのタイトルを入力"/>
+            </nav>
+            <div class="container">
+                <!--<div class="options">カテゴリー</div>-->
+                <div class="row">
+                    <!--<div class="col-md-2"></div>-->
+                    <div class="col-md-3">
+                        <div class="img-attach" ng-controller="imgController">
+                            画像貼り付け
+                            <input type="file" file-model="imageFile"/>
+                            <br/>
+                            <img ng-if="imageFileSrc"
+                                 ng-src="{{imageFileSrc}}"
+                                 style="max-width: 260px"/>
+                        </div>
                     </div>
-                    <div class="desc">
-                        <br/>
-                        <textarea name="desc" cols="55" rows="4" placeholder="まとめの説明を入力"></textarea>
+                    <div class="wrapper col-md-6">
+                        <div class="title">
+                            まとめタイトル
+                            <br/>
+                            <input ng-model="title" type="text" placeholder="まとめのタイトルを入力"/>
+                        </div>
+                        <div class="desc">
+                            <br/>
+                            <textarea ng-model="desc" name="desc" cols="55" rows="4" placeholder="まとめの説明を入力"></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <button class="btn btn-success">設定する</button>
+                <div class="row">
+                    <div class="col-md-3">
+                        <button class="btn btn-success" ng-click="sendPost('draft',items,title,desc)">設定する</button>
+                    </div>
                 </div>
             </div>
         </div>

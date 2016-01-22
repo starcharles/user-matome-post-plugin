@@ -1,0 +1,71 @@
+HOME
+<div ng-app="UserPosts">
+    <div ng-controller="mainController">
+        <nav ng-controller="postController" class="navbar navbar-default">
+            <div class="navbar-header">
+                <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+                <button type="button" class="btn btn-default navbar-btn">プレビュー</button>
+            </div>
+        </nav>
+        <div ng-controller="homeController as home">
+            <!--<button class="btn btn-success" ng-click="home.fetchPosts() "> button</button>-->
+            <uib-tabset justified="true" class="tab-area">
+                <uib-tab heading="投稿した記事">
+                    <ul>
+                        <li class="items list-group col-md-9" ng-repeat="post in home.publishPosts track by $index">
+                            <div class="box-container articles list-group-item">
+                                <div class="box box-{{$index+1}}">
+                                    <div class="post list">
+                                        <div class="post">投稿ID:{{post.id}}</div>
+                                        <div class="post">投稿タイトル：{{post.title.rendered}}</div>
+                                        <div class="post">概要：{{post.excerpt.rendered}}</div>
+                                        <div class="post">日時：{{post.content.date}}</div>
+                                        <div class="link">
+                                            <a ng-href="{{post.link}} ">URL</a>
+                                        </div>
+                                        <div class="post">投稿ステータス：</div>
+                                    </div>
+                                    <div class="btn-area">
+                                        <div class="wrapper-area ">
+                                            <div class="btn btn-success" ng-click="">編集する</div>
+                                            <div class="btn btn-danger" ng-click="home.delete(post.id)" confirm="削除してよろしいですか?">削除する</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </uib-tab>
+                <uib-tab heading="下書き">
+                    <ul>
+                        <li class="items list-group col-md-9" ng-repeat="post in home.draftPosts track by $index">
+                            <div class="box-container articles list-group-item">
+                                <div class="box box-{{$index+1}}">
+                                    <div class="post list">
+                                        <div class="post">投稿ID:{{post.id}}</div>
+                                        <div class="post">投稿タイトル：{{post.title.rendered}}</div>
+                                        <div class="post">概要：{{post.excerpt.rendered}}</div>
+                                        <div class="post">日時：{{post.content.date}}</div>
+                                        <div class="link">
+                                            <a ng-href="{{post.link}} ">URL</a>
+                                        </div>
+                                        <div class="post">投稿ステータス：</div>
+                                    </div>
+                                    <div class="btn-area">
+                                        <div class="wrapper-area ">
+                                            <div class="btn btn-success" ng-click="">編集する</div>
+                                            <div class="btn btn-danger" ng-click="home.deletePost(post.id)" confirm="削除してよろしいですか?">削除する</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </uib-tab>
+                <uib-tab heading="お気に入り">
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+</div>
+

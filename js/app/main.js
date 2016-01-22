@@ -7,7 +7,7 @@
 	'use strict';
 
 	//var inject=['ngResource', 'ngSanitize', 'ngMockE2E', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
-	var inject=['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
+	var inject=['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable','ui.bootstrap.modal'];
 	var app = angular.module('UserPosts',inject);
 
 	app.config(function($httpProvider) {

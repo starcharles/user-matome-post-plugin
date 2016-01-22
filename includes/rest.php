@@ -14,7 +14,7 @@ class RestAPIEndPoint {
 	function __construct() {
 		// カスタム投稿タイプを追加
 		add_action( 'init', array( $this, 'add_custom_post_type' ), 30 );
-//		add_action( 'rest_api_init',array($this,'rest_api_settings'),60);
+		add_action( 'rest_insert_post', array($this,'add_custom_field'),10,3);
 	}
 
 	//create new Endpoint for WP REST API
@@ -62,19 +62,95 @@ class RestAPIEndPoint {
 		}
 	}
 
-	function get_post_query() {
-		//get query from client
-		//get post data(custom field)
+	function create_item( $request ) {
+		if ( ! empty( $request['id'] ) ) {
+			return new WP_Error( 'rest_post_exists', __( 'Cannot create existing post.' ), array( 'status' => 400 ) );
+		}
+
+		$post = $this->prepare_item_for_database( $request );
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$post->post_type = $this->post_type;
+		$post_id = wp_insert_post( $post, true );
+
+		if ( is_wp_error( $post_id ) ) {
+
+			if ( in_array( $post_id->get_error_code(), array( 'db_insert_error' ) ) ) {
+				$post_id->add_data( array( 'status' => 500 ) );
+			} else {
+				$post_id->add_data( array( 'status' => 400 ) );
+			}
+			return $post_id;
+		}
+		$post->ID = $post_id;
+
+		$schema = $this->get_item_schema();
+
+		if ( ! empty( $schema['properties']['sticky'] ) ) {
+			if ( ! empty( $request['sticky'] ) ) {
+				stick_post( $post_id );
+			} else {
+				unstick_post( $post_id );
+			}
+		}
+
+		if ( ! empty( $schema['properties']['featured_image'] ) && isset( $request['featured_image'] ) ) {
+			$this->handle_featured_image( $request['featured_image'], $post->ID );
+		}
+
+		if ( ! empty( $schema['properties']['format'] ) && ! empty( $request['format'] ) ) {
+			set_post_format( $post, $request['format'] );
+		}
+
+		if ( ! empty( $schema['properties']['template'] ) && isset( $request['template'] ) ) {
+			$this->handle_template( $request['template'], $post->ID );
+		}
+
+		$this->update_additional_fields_for_object( get_post( $post_id ), $request );
+
+		/**
+		 * Fires after a single post is created or updated via the REST API.
+		 *
+		 * @param object          $post      Inserted Post object (not a WP_Post object).
+		 * @param WP_REST_Request $request   Request object.
+		 * @param bool            $creating  True when creating post, false when updating.
+		 */
+		do_action( 'rest_insert_post', $post, $request, true );
+
+		$get_request = new WP_REST_Request;
+		$get_request->set_param( 'id', $post_id );
+		$get_request->set_param( 'context', 'edit' );
+		$response = $this->get_item( $get_request );
+		$response = rest_ensure_response( $response );
+		$response->set_status( 201 );
+		$response->header( 'Location', rest_url( '/wp/v2/' . $this->get_post_type_base( $post->post_type ) . '/' . $post_id ) );
+
+		return $response;
 	}
 
-	function create_new_post() {
-		//create custom post
-		//create items
 
+	//カスタムフィールドを追加
+	function add_custom_field($post, $request,$creating){
+		$parameters = $request->get_body();
+		$json=json_decode($parameters);
+
+		$unique=false;
+
+		foreach($json->items as $item){
+			$key=$item->type;
+			$value=$item->content;
+			$id =add_post_meta( $post->ID, $key, $value, $unique );
+
+			if(false==$id){
+				return new WP_Error('100','カスタムフィールド投稿エラー');
+			}
+		}
+
+//		return $result;
+		return;
 	}
-
-
-
 
 
 }
