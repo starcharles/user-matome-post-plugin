@@ -22,7 +22,7 @@
 
 		function addItem(type, content) {
 			if (!content) return;
-			vm.$parent.items.push({
+			vm.items.push({
 				type: type,
 				content: content
 			});

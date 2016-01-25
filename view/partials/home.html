@@ -15,6 +15,7 @@ HOME
                         <li class="items list-group col-md-9" ng-repeat="post in home.publishPosts track by $index">
                             <div class="box-container articles list-group-item">
                                 <div class="box box-{{$index+1}}">
+                                    <div class="btn btn-success" ng-click="">プレビュー</div>
                                     <div class="post list">
                                         <div class="post">投稿ID:{{post.id}}</div>
                                         <div class="post">投稿タイトル：{{post.title.rendered}}</div>
@@ -41,6 +42,7 @@ HOME
                         <li class="items list-group col-md-9" ng-repeat="post in home.draftPosts track by $index">
                             <div class="box-container articles list-group-item">
                                 <div class="box box-{{$index+1}}">
+                                    <div class="btn btn-success" ng-click="">プレビュー</div>
                                     <div class="post list">
                                         <div class="post">投稿ID:{{post.id}}</div>
                                         <div class="post">投稿タイトル：{{post.title.rendered}}</div>

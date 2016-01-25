@@ -26,8 +26,7 @@
 
 
         fetchPosts();
-        //fetchPosts('publish');
-        //fetchPosts('draft');
+
         //////////////
 
         function fetchPosts() {
