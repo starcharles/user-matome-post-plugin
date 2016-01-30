@@ -34,3 +34,12 @@ textarea{
     position: absolute;
     z-index: 100;
 }
+
+.spinner-gif{
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    background: url('../images/ajax-loader.gif') no-repeat;
+    
+}

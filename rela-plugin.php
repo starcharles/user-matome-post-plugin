@@ -57,7 +57,6 @@ ih	 *
 		wp_register_script( 'ui-bootstrap-tpls', plugin_dir_url( __FILE__ ) . 'js/lib/ui-bootstrap-tpls.min.js', array( 'bootstrap' ) );
 		wp_register_script( 'ui-sortable', plugin_dir_url( __FILE__ ) . 'js/lib/sortable.min.js');
 		wp_register_script( 'iframe-api', plugin_dir_url( __FILE__ ) . 'js/app/iframe_api.js' );
-		wp_register_script( 'angular-confirm', plugin_dir_url( __FILE__ ) . 'js/lib/angular-confirm.js', array( 'angular','ui-bootstrap-tpls' ) );
 
 		//コード
 		wp_register_script( 'main', plugin_dir_url( __FILE__ ) . 'js/app/main.js', array(
@@ -70,8 +69,9 @@ ih	 *
 		wp_register_script( 'youtube-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/youtubeController.js', array('main','tab-controller'));
 		wp_register_script( 'img-upload', plugin_dir_url( __FILE__ ) . 'js/app/controller/imgUpload.js', array( 'main','tab-controller' ) );
 		wp_register_script( 'items-view-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/itemsViewController.js', array( 'main', 'tab-controller' ) );
+		wp_register_script( 'home-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/homeController.js', array( 'main','wp-resource-factory','data-service') );
 		wp_register_script( 'wp-resource-factory', plugin_dir_url( __FILE__ ) . 'js/app/factory/wpResourceFactory.js', array( 'main', 'tab-controller' ) );
-		wp_register_script( 'home-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/homeController.js', array( 'main') );
+		wp_register_script( 'data-service', plugin_dir_url( __FILE__ ) . 'js/app/factory/dataService.js', array( 'main','wp-resource-factory') );
 	}
 
 	function loadLibraries() {
@@ -96,6 +96,7 @@ ih	 *
 		wp_enqueue_script( 'items-view-controller' );
 		wp_enqueue_script( 'home-controller' );
 		wp_enqueue_script( 'wp-resource-factory' );
+		wp_register_script( 'data-service');
 
 		//CSS
 		wp_enqueue_style( 'bootstrap', plugin_dir_url( __FILE__ ) . 'css/bootstrap.min.css' );
@@ -126,13 +127,13 @@ ih	 *
 	 * @return string
 	 */
 	function my_shortcode() {
-		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/view/mypage.html' );
+		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/mypage.html' );
 
 		return $content;
 	}
 
 	function add_shortcode_mypage() {
-		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/view/partials/home.html' );
+		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/partials/home.html' );
 
 		return $content;
 	}

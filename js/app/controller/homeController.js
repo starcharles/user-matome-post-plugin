@@ -10,15 +10,23 @@
 
     app.controller('homeController', homeController);
 
-    function homeController($scope, $window, wpPostResource) {
-        var vm = this;
+    /**
+     *
+     * @param $scope
+     * @param $window
+     * @param wpPostResource
+     * @param dataService
+     */
+    function homeController($scope, $window, wpPostResource, dataService) {
+        var vm = $scope;
+
         //メソッド一覧
         vm.fetchPosts = fetchPosts;
         vm.delete = function (post_id) {
             if ($window.confirm('削除してよろしいですか？')) {
-                deletePost(post_id, function (result){
-                    var trashed=result.trashed;
-                    if(trashed) $window.alert('削除しました。')
+                deletePost(post_id, function (result) {
+                    var trashed = result.trashed;
+                    if (trashed) $window.alert('削除しました。')
                     console.log(result);
                 });
             }
@@ -30,19 +38,28 @@
         //////////////
 
         function fetchPosts() {
-            wpPostResource.query(function (data) {
-                console.log(data);
-                vm.publishPosts = data;
+            vm.spinner = true;
+            vm.postData= {
+                publish: [],
+                draft: []
+            };
+
+            dataService.getPublishPosts(function (status,data) {
+                console.log(status);
+                vm.postData.publish = data;
+                vm.spinner = false;
             });
 
-            wpPostResource.query({status: 'draft'}, function (data) {
-                vm.draftPosts = data;
+            dataService.getDraftPosts(function (status,data) {
+                console.log(status);
+                vm.postData.draft = data;
+                vm.spinner = false;
             });
+
         }
 
         function deletePost(post_id) {
             console.log('delete');
-
             wpPostResource.delete({id: post_id}, function (result) {
                 console.log(result);
             });

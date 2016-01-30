@@ -42,7 +42,7 @@ class Rela_Rest_Controller extends WP_REST_Controller {
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 				'args'                => array(
 					'context' => array(
-						'default' => 'view',
+						'default' => 'views',
 					),
 				),
 			),

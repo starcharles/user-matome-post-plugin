@@ -8,14 +8,21 @@ HOME
             </div>
         </nav>
         <div ng-controller="homeController as home">
+            <div class="spinner-container" ng-show="spinner">
+                <div class="spinner-gif"></div>
+                <div class="loading">通信中.........</div>
+            </div>
+            <div ng-show="spinnerErr.result">
+                エラー:{{spinnerErr}}
+            </div>
             <!--<button class="btn btn-success" ng-click="home.fetchPosts() "> button</button>-->
             <uib-tabset justified="true" class="tab-area">
                 <uib-tab heading="投稿した記事">
                     <ul>
-                        <li class="items list-group col-md-9" ng-repeat="post in home.publishPosts track by $index">
+                        <li class="items list-group col-md-9" ng-repeat="post in postData.publish track by $index">
                             <div class="box-container articles list-group-item">
                                 <div class="box box-{{$index+1}}">
-                                    <div class="btn btn-success" ng-click="">プレビュー</div>
+                                    <a ng-href="/preview?post_id={{post.id}}" target="_blank" class="btn btn-success">プレビュー</a>
                                     <div class="post list">
                                         <div class="post">投稿ID:{{post.id}}</div>
                                         <div class="post">投稿タイトル：{{post.title.rendered}}</div>
@@ -28,8 +35,13 @@ HOME
                                     </div>
                                     <div class="btn-area">
                                         <div class="wrapper-area ">
-                                            <div class="btn btn-success" ng-click="">編集する</div>
-                                            <div class="btn btn-danger" ng-click="home.delete(post.id)" confirm="削除してよろしいですか?">削除する</div>
+                                            <div class="btn btn-success">
+                                                <a ng-href="/mypage?edit={{post.id}}"></a>
+                                                編集する
+                                            </div>
+                                            <div class="btn btn-danger" ng-click="delete(post.id)"
+                                                 confirm="削除してよろしいですか?">削除する
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -39,10 +51,10 @@ HOME
                 </uib-tab>
                 <uib-tab heading="下書き">
                     <ul>
-                        <li class="items list-group col-md-9" ng-repeat="post in home.draftPosts track by $index">
+                        <li class="items list-group col-md-9" ng-repeat="post in postData.draft track by $index">
                             <div class="box-container articles list-group-item">
                                 <div class="box box-{{$index+1}}">
-                                    <div class="btn btn-success" ng-click="">プレビュー</div>
+                                    <div class="btn btn-success" ng-href="/preview?post_id={{post.id}}">プレビュー</div>
                                     <div class="post list">
                                         <div class="post">投稿ID:{{post.id}}</div>
                                         <div class="post">投稿タイトル：{{post.title.rendered}}</div>
@@ -55,8 +67,13 @@ HOME
                                     </div>
                                     <div class="btn-area">
                                         <div class="wrapper-area ">
-                                            <div class="btn btn-success" ng-click="">編集する</div>
-                                            <div class="btn btn-danger" ng-click="home.deletePost(post.id)" confirm="削除してよろしいですか?">削除する</div>
+                                            <div class="btn btn-success">
+                                                <a ng-href="/preview?post_id={{post.id}}"></a>
+                                                編集する
+                                            </div>
+                                            <div class="btn btn-danger" ng-click="home.deletePost(post.id)"
+                                                 confirm="削除してよろしいですか?">削除する
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

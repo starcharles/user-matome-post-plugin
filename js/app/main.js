@@ -6,8 +6,8 @@
 (function() {
 	'use strict';
 
-	//var inject=['ngResource', 'ngSanitize', 'ngMockE2E', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
-	var inject=['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable','ui.bootstrap.modal'];
+    //var inject=['ngMockE2E','ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
+	var inject=['ngResource', 'ngSanitize', 'ui.bootstrap', 'youtube-embed', 'ui.sortable'];
 	var app = angular.module('UserPosts',inject);
 
 	app.config(function($httpProvider) {
@@ -17,8 +17,8 @@
 		};
 	});
 
-	app.run(function($rootScope) {
-		$rootScope.isLoggedIn=true;
+	//app.run(function($rootScope) {
+	//	$rootScope.isLoggedIn=true;
 
 		//isLoggedIn;
 		//isAuth=true or false;
@@ -27,12 +27,10 @@
 		//}, function(data) {
 		//	$rootScope.myself = data;
 		//});
-	});
+	//});
+
 	app.controller('mainController', mainController);
-	/**
-	 *
-	 * @param $scope
-	 */
+
 	function mainController($scope) {
 		var vm = $scope;
 		vm.content = {};
