@@ -52,9 +52,8 @@
                         callback(err);
                         });
             },
-            getMetaField: function (id) {
-                wpPostMeta({id:id}, function (data) {
-
+            getMetaField: function (id,callback) {
+                wpPostMeta({parentId:id}, function (data) {
                     console.log(data);
 
                 });

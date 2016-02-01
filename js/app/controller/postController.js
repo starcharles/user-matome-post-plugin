@@ -9,7 +9,7 @@
     var app = angular.module('UserPosts');
 
 
-    app.controller('postController', function ($scope, wpPostResource, wpPostMeta) {
+    app.controller('postController', function ($scope, wpPostResource, wpPostMeta,dataService) {
         //スコープを変数に代入
         var vm = $scope;
         vm.title = null;
@@ -25,12 +25,12 @@
         //TODO：投稿全体の削除
         //vm.deletePost = deletePost;
 
-        function getPosts() {
-            wpPostResource.query({}, function (data) {
-                vm.posts = data;
-                console.log(data);
-            });
-        }
+        //function getPosts() {
+        //    wpPostResource.query({}, function (data) {
+        //        vm.posts = data;
+        //        console.log(data);
+        //    });
+        //}
 
         function sendPost(status, head) {
             var items = vm.items;

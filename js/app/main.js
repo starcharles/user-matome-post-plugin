@@ -30,7 +30,8 @@
             root.edit=true;
             root.loading=true;
             var post_id = params.edit;
-            wpPostMeta.query({parentId: post_id}, function (result) {
+            
+            dataService.getMetaField(id, function (result) {
                 console.log(result);
                 root.head={
                     title:result.title,
