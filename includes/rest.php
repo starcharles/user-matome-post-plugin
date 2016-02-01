@@ -7,14 +7,16 @@
  * Time: 19:21
  */
 
-define( 'POST_TYPE', 'user-post' );
+define( 'POST_TYPE', 'userpost' );
 
 class RestAPIEndPoint {
 
 	function __construct() {
 		// カスタム投稿タイプを追加
 		add_action( 'init', array( $this, 'add_custom_post_type' ), 30 );
-		add_action( 'rest_insert_post', array($this,'add_custom_field'),10,3);
+		add_action( 'rest_insert_'.POST_TYPE, array( $this, 'add_custom_field' ), 10, 3 );
+//		add_action( 'rest_insert_post', array( $this, 'update_custom_field' ), 10, 3 );
+//		add_action( 'rest_insert_post', array( $this, 'delete_custom_field' ), 10, 3 );
 	}
 
 	//create new Endpoint for WP REST API
@@ -40,6 +42,30 @@ class RestAPIEndPoint {
 			'menu_name'          => _x( 'まとめ', 'matome' ),
 		);
 
+		$capabilities = array(
+			'create_posts' => 'create_userposts',
+			// 自分の投稿を編集する権限
+			'edit_posts' => 'edit_userposts',
+			// 他のユーザーの投稿を編集する権限
+//			'edit_others_posts' => 'edit_others_userposts',
+			// 投稿を公開する権限
+			'publish_posts' => 'publish_userposts',
+			// プライベート投稿を閲覧する権限
+			'read_private_posts' => 'read_private_userposts',
+			// 自分の投稿を削除する権限
+			'delete_posts' => 'delete_userposts',
+			// プライベート投稿を削除する権限
+			'delete_private_posts' => 'delete_private_userposts',
+			// 公開済み投稿を削除する権限
+			'delete_published_posts' => 'delete_published_matomes',
+			// 他のユーザーの投稿を削除する権限
+			'delete_others_posts' => 'delete_others_userposts',
+			// プライベート投稿を編集する権限
+			'edit_private_posts' => 'edit_private_userposts',
+			// 公開済みの投稿を編集する権限
+			'edit_published_posts' => 'edit_published_userposts',
+		);
+
 		$args = array(
 			'labels'             => $labels,
 			'description'        => __( 'Description.', 'ユーザー投稿専用' ),
@@ -49,12 +75,22 @@ class RestAPIEndPoint {
 			'show_in_menu'       => true,
 			'query_var'          => true,
 			'rewrite'            => array( 'slug' => 'userpost' ),
-			'capability_type'    => 'post',
+			'capability_type'    => 'userpost',
+//			'capabilities'    => $capabilities,
+			'map_meta_cap'    => true,
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
 			'show_in_rest'       => true,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt','custom-fields', 'comments' )
+			'supports'           => array(
+				'title',
+				'editor',
+				'author',
+				'thumbnail',
+				'excerpt',
+				'custom-fields',
+				'comments'
+			)
 		);
 
 		if ( ! isset( $wp_post_types[ $post_type ] ) ) {
@@ -62,96 +98,67 @@ class RestAPIEndPoint {
 		}
 	}
 
-	function create_item( $request ) {
-		if ( ! empty( $request['id'] ) ) {
-			return new WP_Error( 'rest_post_exists', __( 'Cannot create existing post.' ), array( 'status' => 400 ) );
-		}
-
-		$post = $this->prepare_item_for_database( $request );
-		if ( is_wp_error( $post ) ) {
-			return $post;
-		}
-
-		$post->post_type = $this->post_type;
-		$post_id = wp_insert_post( $post, true );
-
-		if ( is_wp_error( $post_id ) ) {
-
-			if ( in_array( $post_id->get_error_code(), array( 'db_insert_error' ) ) ) {
-				$post_id->add_data( array( 'status' => 500 ) );
-			} else {
-				$post_id->add_data( array( 'status' => 400 ) );
-			}
-			return $post_id;
-		}
-		$post->ID = $post_id;
-
-		$schema = $this->get_item_schema();
-
-		if ( ! empty( $schema['properties']['sticky'] ) ) {
-			if ( ! empty( $request['sticky'] ) ) {
-				stick_post( $post_id );
-			} else {
-				unstick_post( $post_id );
-			}
-		}
-
-		if ( ! empty( $schema['properties']['featured_image'] ) && isset( $request['featured_image'] ) ) {
-			$this->handle_featured_image( $request['featured_image'], $post->ID );
-		}
-
-		if ( ! empty( $schema['properties']['format'] ) && ! empty( $request['format'] ) ) {
-			set_post_format( $post, $request['format'] );
-		}
-
-		if ( ! empty( $schema['properties']['template'] ) && isset( $request['template'] ) ) {
-			$this->handle_template( $request['template'], $post->ID );
-		}
-
-		$this->update_additional_fields_for_object( get_post( $post_id ), $request );
-
-		/**
-		 * Fires after a single post is created or updated via the REST API.
-		 *
-		 * @param object          $post      Inserted Post object (not a WP_Post object).
-		 * @param WP_REST_Request $request   Request object.
-		 * @param bool            $creating  True when creating post, false when updating.
-		 */
-		do_action( 'rest_insert_post', $post, $request, true );
-
-		$get_request = new WP_REST_Request;
-		$get_request->set_param( 'id', $post_id );
-		$get_request->set_param( 'context', 'edit' );
-		$response = $this->get_item( $get_request );
-		$response = rest_ensure_response( $response );
-		$response->set_status( 201 );
-		$response->header( 'Location', rest_url( '/wp/v2/' . $this->get_post_type_base( $post->post_type ) . '/' . $post_id ) );
-
-		return $response;
-	}
-
-
 	//カスタムフィールドを追加
-	function add_custom_field($post, $request,$creating){
+	function add_custom_field( $post, $request, $creating ) {
 		$parameters = $request->get_body();
-		$json=json_decode($parameters);
+		$json       = json_decode( $parameters );
+		$unique = false;
 
-		$unique=false;
+		if(true == $creating){
+			//creating new
+			foreach ( $json->items as $item ) {
+				$key   = $item->type;
+				$value = $item->content;
+				$id    = add_post_meta( $post->ID, $key, $value, $unique );
 
-		foreach($json->items as $item){
-			$key=$item->type;
-			$value=$item->content;
-			$id =add_post_meta( $post->ID, $key, $value, $unique );
-
-			if(false==$id){
-				return new WP_Error('100','カスタムフィールド投稿エラー');
+				if ( false == $id ) {
+					return new WP_Error( 'cannot_create_custom_field', 'カスタムフィールド投稿エラー', array( 'status' => 400 ) );
+				}
 			}
+
+		}elseif(false ==$creating){
+			//updating
+
 		}
 
-//		return $result;
-		return;
+
+		return true;
 	}
 
+	function update_custom_field( $post, $request, $flag ) {
+
+		if(true == $frag){
+			$parameters = $request->get_body();
+			$json       = json_decode( $parameters );
+
+			var_dump($json);
+//		foreach ( $json->items as $item ) {
+//			$key   = $item->type;
+//			$value = $item->content;
+//
+//			$types = array( 'text', 'citation', 'youtube', 'headline', 'link', 'amazon' );
+//
+//			foreach ( $types as $type ) {
+//				$storedVal = get_post_meta( $post->ID, $type );
+//				if ( isset( $storedVal ) ) {
+//					foreach ( $storedVal as $prev ) {
+//						$result = update_post_meta( $post->ID, $type, $meta_value, $prev );
+//
+//						if ( false == $result ) {
+//							return new WP_Error( '120', 'カスタムフィールド投稿エラー' );
+//						}
+//					}
+//				}
+//			}
+//		}
+
+		}else if(false == $flag){
+			//updating posts
+		}
+
+
+		return true;
+	}
 
 }
 

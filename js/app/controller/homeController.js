@@ -13,12 +13,18 @@
     /**
      *
      * @param $scope
+     * @param $rootScope
      * @param $window
-     * @param wpPostResource
-     * @param dataService
+     * @param wpPostResource:
+     * @param dataService :データ取得関連メソッド
      */
-    function homeController($scope, $window, wpPostResource, dataService) {
+    function homeController($scope,$rootScope, $window, wpPostResource, dataService) {
         var vm = $scope;
+        var root=$rootScope;
+        root.postData= {
+            publish: [],
+            draft: []
+        };
 
         //メソッド一覧
         vm.fetchPosts = fetchPosts;
@@ -27,7 +33,6 @@
                 deletePost(post_id, function (result) {
                     var trashed = result.trashed;
                     if (trashed) $window.alert('削除しました。')
-                    console.log(result);
                 });
             }
         };
@@ -39,22 +44,18 @@
 
         function fetchPosts() {
             vm.spinner = true;
-            vm.postData= {
-                publish: [],
-                draft: []
-            };
 
-            dataService.getPublishPosts(function (status,data) {
-                console.log(status);
-                vm.postData.publish = data;
+            dataService.getPublishPosts(function (data) {
+                root.postData.publish=data;
                 vm.spinner = false;
+                console.log(data);
             });
 
-            dataService.getDraftPosts(function (status,data) {
-                console.log(status);
-                vm.postData.draft = data;
-                vm.spinner = false;
-            });
+            //dataService.getDraftPosts(function (data) {
+            //    root.postData.draft=data;
+            //    vm.spinner = false;
+            //    console.log(data);
+            //});
 
         }
 

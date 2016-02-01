@@ -13,7 +13,7 @@
         //スコープを変数に代入
         var vm = $scope;
         vm.title = null;
-        vm.desc=null;
+        vm.desc = null;
 
         //メソッド一覧
         vm.getPosts = getPosts;
@@ -28,21 +28,21 @@
             });
         }
 
-        function sendPost(status,items,title,desc) {
+        //function sendPost(status,items,title,desc) {
+        function sendPost(status, head) {
+            var items=vm.items;
+
             //入力チェック
-            if (items.length === 0 && title===null && desc ===null ) return;
+            if (items.length === 0 && head.title === null && head.desc === null) return;
 
             console.log('send post');
-            console.log(title);
-            console.log(desc);
-            console.log(vm.items);
-
-            var items = vm.items;
+            console.log(head);
+            console.log(items);
 
             wpPostResource.save({
                 status: status,
-                title: title,
-                content: desc, //jshint ignore:line
+                title: head.title,
+                content: head.desc,
                 items: items
             }, function (result) {
                 console.log(result);
@@ -57,7 +57,18 @@
             //});
         }
 
-        function updatePost() {
+        function updatePost(postId, items) {
+            console.log(vm.items);
+
+            var items = vm.items;
+
+            wpPostResource.save({
+                type: 'update',
+                postId: postId,
+                items: items
+            }, function (result) {
+                console.log(result);
+            });
         }
 
         function deletePost() {

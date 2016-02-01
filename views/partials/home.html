@@ -1,4 +1,3 @@
-HOME
 <div ng-app="UserPosts">
     <div ng-controller="mainController">
         <nav ng-controller="postController" class="navbar navbar-default">
@@ -7,7 +6,7 @@ HOME
                 <button type="button" class="btn btn-default navbar-btn">プレビュー</button>
             </div>
         </nav>
-        <div ng-controller="homeController as home">
+        <div ng-controller="homeController">
             <div class="spinner-container" ng-show="spinner">
                 <div class="spinner-gif"></div>
                 <div class="loading">通信中.........</div>
@@ -22,23 +21,21 @@ HOME
                         <li class="items list-group col-md-9" ng-repeat="post in postData.publish track by $index">
                             <div class="box-container articles list-group-item">
                                 <div class="box box-{{$index+1}}">
-                                    <a ng-href="/preview?post_id={{post.id}}" target="_blank" class="btn btn-success">プレビュー</a>
+                                    <a ng-href="/preview#?post_id={{post.id}}" target="_blank" class="btn btn-success">プレビュー</a>
+
                                     <div class="post list">
                                         <div class="post">投稿ID:{{post.id}}</div>
                                         <div class="post">投稿タイトル：{{post.title.rendered}}</div>
                                         <div class="post">概要：{{post.excerpt.rendered}}</div>
                                         <div class="post">日時：{{post.content.date}}</div>
                                         <div class="link">
-                                            <a ng-href="{{post.link}} ">URL</a>
+                                            <a ng-href="{{post.link}}" target="_blank">URL</a>
                                         </div>
                                         <div class="post">投稿ステータス：</div>
                                     </div>
                                     <div class="btn-area">
                                         <div class="wrapper-area ">
-                                            <div class="btn btn-success">
-                                                <a ng-href="/mypage?edit={{post.id}}"></a>
-                                                編集する
-                                            </div>
+                                            <a class="btn btn-success" ng-href="/relaunch-mypage#?edit={{post.id}}">編集する</a>
                                             <div class="btn btn-danger" ng-click="delete(post.id)"
                                                  confirm="削除してよろしいですか?">削除する
                                             </div>
