@@ -12,14 +12,18 @@
     var resource = 'http://vccw.dev';
 
     app.factory('wpPostResource', function ($resource) {
-        return $resource(resource + '/wp-json/wp/v2/userpost/:id',{id:'@id'});
+        return $resource(resource + '/wp-json/wp/v2/userpost/:id',
+            {id: '@id'}, {
+                //'update': {method: 'PUT'}
+            });
         //return $resource(resource + '/wp-json/wp/v2/userpost/');
-        //return $resource(resource + '/wp-json/wp/v2/posts/');
     });
 
     app.factory('wpPostMeta', function ($resource) {
-        return $resource(resource + '/wp-json/wp/v2/userpost/:id/meta', {id: '@id'});
-        //return $resource(resource + '/wp-json/wp/v2/posts/:id/meta',{id:'@id'});
+        return $resource(resource + '/wp-json/wp/v2/userpost/:parentId/meta/:id',
+            {parentId: '@parentId',
+            id:'@id'}
+        );
     });
 
     app.factory('wpUserResource', function ($resource) {

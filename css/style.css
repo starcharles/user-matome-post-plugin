@@ -43,3 +43,18 @@ textarea{
     background: url('../images/ajax-loader.gif') no-repeat;
     
 }
+.main-spinner{
+    display: block;
+    width: 400px;
+    height: 400px;
+
+}
+
+.btn-loading{
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    background: url('../images/ajax-loader.gif') no-repeat;
+
+}

@@ -23,13 +23,19 @@
         root.items = [];
 
         var params = $location.search();
-        root.postId=params.edit;
+        root.editingPostId=params.edit;
 
 
         if (params.edit) {
+            root.edit=true;
+            root.loading=true;
             var post_id = params.edit;
-            wpPostMeta.query({id: post_id}, function (result) {
+            wpPostMeta.query({parentId: post_id}, function (result) {
                 console.log(result);
+                root.head={
+                    title:result.title,
+                    desc:result.desc
+                };
                 result.forEach(function (data) {
                     var item = {
                         id: data.id,
@@ -37,7 +43,8 @@
                         content: data.value
                     };
                     root.items.push(item);
-                })
+                });
+                root.loading=false;
             });
         }
 

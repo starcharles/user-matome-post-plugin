@@ -32,7 +32,7 @@
 
             },
             getDraftPosts: function (callback) {
-                wpPostResource.query({status: 'pending'})
+                wpPostResource.query({status: 'draft'})
                     .$promise.then(function (data) {
                         postData.draft = data;
                         callback(data);

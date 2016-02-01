@@ -14,7 +14,7 @@ class RestAPIEndPoint {
 	function __construct() {
 		// カスタム投稿タイプを追加
 		add_action( 'init', array( $this, 'add_custom_post_type' ), 30 );
-		add_action( 'rest_insert_'.POST_TYPE, array( $this, 'add_custom_field' ), 10, 3 );
+		add_action( 'rest_insert_' . POST_TYPE, array( $this, 'add_custom_field' ), 10, 3 );
 //		add_action( 'rest_insert_post', array( $this, 'update_custom_field' ), 10, 3 );
 //		add_action( 'rest_insert_post', array( $this, 'delete_custom_field' ), 10, 3 );
 	}
@@ -43,27 +43,27 @@ class RestAPIEndPoint {
 		);
 
 		$capabilities = array(
-			'create_posts' => 'create_userposts',
+			'create_posts'           => 'create_userposts',
 			// 自分の投稿を編集する権限
-			'edit_posts' => 'edit_userposts',
+			'edit_posts'             => 'edit_userposts',
 			// 他のユーザーの投稿を編集する権限
 //			'edit_others_posts' => 'edit_others_userposts',
 			// 投稿を公開する権限
-			'publish_posts' => 'publish_userposts',
+			'publish_posts'          => 'publish_userposts',
 			// プライベート投稿を閲覧する権限
-			'read_private_posts' => 'read_private_userposts',
+			'read_private_posts'     => 'read_private_userposts',
 			// 自分の投稿を削除する権限
-			'delete_posts' => 'delete_userposts',
+			'delete_posts'           => 'delete_userposts',
 			// プライベート投稿を削除する権限
-			'delete_private_posts' => 'delete_private_userposts',
+			'delete_private_posts'   => 'delete_private_userposts',
 			// 公開済み投稿を削除する権限
 			'delete_published_posts' => 'delete_published_matomes',
 			// 他のユーザーの投稿を削除する権限
-			'delete_others_posts' => 'delete_others_userposts',
+			'delete_others_posts'    => 'delete_others_userposts',
 			// プライベート投稿を編集する権限
-			'edit_private_posts' => 'edit_private_userposts',
+			'edit_private_posts'     => 'edit_private_userposts',
 			// 公開済みの投稿を編集する権限
-			'edit_published_posts' => 'edit_published_userposts',
+			'edit_published_posts'   => 'edit_published_userposts',
 		);
 
 		$args = array(
@@ -77,7 +77,7 @@ class RestAPIEndPoint {
 			'rewrite'            => array( 'slug' => 'userpost' ),
 			'capability_type'    => 'userpost',
 //			'capabilities'    => $capabilities,
-			'map_meta_cap'    => true,
+			'map_meta_cap'       => true,
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
@@ -98,13 +98,13 @@ class RestAPIEndPoint {
 		}
 	}
 
-	//カスタムフィールドを追加
+	//カスタムフィールドを一括で追加
 	function add_custom_field( $post, $request, $creating ) {
 		$parameters = $request->get_body();
 		$json       = json_decode( $parameters );
-		$unique = false;
+		$unique     = false;
 
-		if(true == $creating){
+		if ( true == $creating ) {
 			//creating new
 			foreach ( $json->items as $item ) {
 				$key   = $item->type;
@@ -115,27 +115,19 @@ class RestAPIEndPoint {
 					return new WP_Error( 'cannot_create_custom_field', 'カスタムフィールド投稿エラー', array( 'status' => 400 ) );
 				}
 			}
-
-		}elseif(false ==$creating){
-			//updating
-
 		}
-
-
-		return true;
 	}
 
-	function update_custom_field( $post, $request, $flag ) {
 
-		if(true == $frag){
-			$parameters = $request->get_body();
-			$json       = json_decode( $parameters );
-
-			var_dump($json);
+//	function update_custom_field( $post, $request, $flag ) {
+//
+//		$parameters = $request->get_body();
+//		$json       = json_decode( $parameters );
+//
+//		//updating
 //		foreach ( $json->items as $item ) {
 //			$key   = $item->type;
 //			$value = $item->content;
-//
 //			$types = array( 'text', 'citation', 'youtube', 'headline', 'link', 'amazon' );
 //
 //			foreach ( $types as $type ) {
@@ -151,14 +143,8 @@ class RestAPIEndPoint {
 //				}
 //			}
 //		}
-
-		}else if(false == $flag){
-			//updating posts
-		}
-
-
-		return true;
-	}
+//
+//	}
 
 }
 

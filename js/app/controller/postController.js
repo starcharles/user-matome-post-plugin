@@ -9,7 +9,7 @@
     var app = angular.module('UserPosts');
 
 
-    app.controller('postController', function ($scope, wpPostResource) {
+    app.controller('postController', function ($scope, wpPostResource, wpPostMeta) {
         //スコープを変数に代入
         var vm = $scope;
         vm.title = null;
@@ -18,8 +18,12 @@
         //メソッド一覧
         vm.getPosts = getPosts;
         vm.sendPost = sendPost;
-        vm.updatePost = updatePost;
-        vm.deletePost = deletePost;
+        //vm.updatePost = updatePost;
+        vm.updateMetaField = updateMetaField;
+        //TODO：個別削除
+        //vm.deleteMetaField = deleteMetaField;
+        //TODO：投稿全体の削除
+        //vm.deletePost = deletePost;
 
         function getPosts() {
             wpPostResource.query({}, function (data) {
@@ -28,9 +32,8 @@
             });
         }
 
-        //function sendPost(status,items,title,desc) {
         function sendPost(status, head) {
-            var items=vm.items;
+            var items = vm.items;
 
             //入力チェック
             if (items.length === 0 && head.title === null && head.desc === null) return;
@@ -47,30 +50,30 @@
             }, function (result) {
                 console.log(result);
             });
-            //wpPostResource.save({
-            //    status: status,
-            //    title: 'カスタムフィールドテスト',
-            //    content: 'テスト', //jshint ignore:line
-            //    items: items
-            //}, function (result) {
-            //    console.log(result);
-            //});
         }
 
-        function updatePost(postId, items) {
-            console.log(vm.items);
+        function updateMetaField(parentId, metaId, item) {
+            console.log(parentId);
+            console.log(metaId);
+            console.log(item);
 
-            var items = vm.items;
+            parentId = parseInt(parentId, '10');
 
-            wpPostResource.save({
-                type: 'update',
-                postId: postId,
-                items: items
+            vm.loadBtn = true;
+            wpPostMeta.save({
+                parentId: parentId,
+                id: metaId,
+                key: item.type,
+                value: item.content
             }, function (result) {
+                vm.loadBtn = false;
+                vm.show = false;
+
                 console.log(result);
             });
         }
 
+        //TODO deleteの実装
         function deletePost() {
         }
     });

@@ -51,11 +51,11 @@
                 console.log(data);
             });
 
-            //dataService.getDraftPosts(function (data) {
-            //    root.postData.draft=data;
-            //    vm.spinner = false;
-            //    console.log(data);
-            //});
+            dataService.getDraftPosts(function (data) {
+                root.postData.draft=data;
+                //vm.spinner = false;
+                console.log(data);
+            });
 
         }
 
