@@ -32,6 +32,7 @@ class RelaPlugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'set_script_dependencies' ), 900 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'loadLibraries' ), 900 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'localize_nonce' ), 1000 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'localize_angular_templates' ), 1000 );
 		add_action( 'admin_init', array( $this, 'insertMypage' ) );
 		add_shortcode( 'rela-postpage', array( $this, 'my_shortcode' ) );
 		add_shortcode( 'rela-home', array( $this, 'add_shortcode_mypage' ) );
@@ -126,6 +127,16 @@ class RelaPlugin {
 		wp_enqueue_style( 'rela-mypage-style', plugin_dir_url( __FILE__ ) . 'css/style.css' );
 	}
 
+//	function angular_views(){
+//		wp_localize_script(
+//			'angular-views',
+//			'myLocalized',
+//			array(
+//				'partials' => trailingslashit( get_template_directory_uri() ) . 'partials/'
+//			)
+//		);
+//	}
+
 
 	//create a page when this plugin is activated
 	function insertMypage() {
@@ -175,15 +186,19 @@ class RelaPlugin {
 			array( 'nonce' => wp_create_nonce( 'wp_rest' ) )
 		);
 	}
-	//check user authentification
 
-	//define {key:value} JSON data to accept with REST
+	//  /views/*htmlをAngularから読み込むため
+	function localize_angular_templates() {
 
-	//validation,escape of POST data
-
-
+		//main.jsに適用する
+		wp_localize_script( 'main',
+			'myLocalizedViews',
+			array(
+				'views' =>  plugin_dir_url( __FILE__ ). '/views'
+			)
+		);
+	}
 }
-
 
 new RelaPlugin();
 new RestAPIEndPoint();

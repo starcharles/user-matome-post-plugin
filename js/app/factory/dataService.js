@@ -10,7 +10,7 @@
 
     app.factory('dataService', dataService);
 
-    function dataService(wpPostResource) {
+    function dataService(wpPostResource,wpPostMeta) {
         var postData = {
             publish: [],
             draft: []

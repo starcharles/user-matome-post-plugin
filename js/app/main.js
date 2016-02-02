@@ -31,12 +31,12 @@
             root.loading=true;
             var post_id = params.edit;
             
-            dataService.getMetaField(id, function (result) {
+            dataService.getMetaField(post_id, function (result) {
                 console.log(result);
-                root.head={
-                    title:result.title,
-                    desc:result.desc
-                };
+                //root.head={
+                //    title:result.title,
+                //    desc:result.desc
+                //};
                 result.forEach(function (data) {
                     var item = {
                         id: data.id,
