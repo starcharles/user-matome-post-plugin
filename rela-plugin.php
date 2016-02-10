@@ -20,10 +20,11 @@ define( 'HOME_POSTNAME', 'relaunch-home' ); //URL
 
 require_once( 'includes/rest.php' );
 
-//register_activation_hook( __FILE__, array( 'RelaPlugin', 'activation_hook' ) );
+register_activation_hook( __FILE__, array( 'RelaPlugin', 'activation_hook' ) );
 
 class RelaPlugin {
 	function activation_hook() {
+		add_action( 'admin_init', array( $this, 'insertMypage' ) );
 		//	register_activation_hook();
 		//依存プラグインのチェック、バージョン
 	}
@@ -33,30 +34,25 @@ class RelaPlugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'loadLibraries' ), 900 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'localize_nonce' ), 1000 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'localize_angular_templates' ), 1000 );
-		add_action( 'admin_init', array( $this, 'insertMypage' ) );
 		add_shortcode( 'rela-postpage', array( $this, 'my_shortcode' ) );
-		add_shortcode( 'rela-home', array( $this, 'add_shortcode_mypage' ) );
-		add_shortcode( 'rela-preview', array( $this, 'add_shortcode_preview' ) );
+//		add_shortcode( 'rela-home', array( $this, 'add_shortcode_mypage' ) );
+//		add_shortcode( 'rela-preview', array( $this, 'add_shortcode_preview' ) );
 
 	}
 
-	/**
-	 * ih     *
-	 *
-	 *
-	 */
 	function set_script_dependencies() {
 		//ライブラリーファイル
 		wp_register_script( 'jquery', plugin_dir_url( __FILE__ ) . 'js/lib/jquery-1.12.0.min.js' );
 		wp_register_script( 'angular', plugin_dir_url( __FILE__ ) . ( 'js/lib/angular.min.js' ), array( 'jquery' ) );
 		wp_register_script( 'angular-resource', plugin_dir_url( __FILE__ ) . 'js/lib/angular-resource.min.js', array( 'angular' ) );
 		wp_register_script( 'angular-sanitize', plugin_dir_url( __FILE__ ) . 'js/lib/angular-sanitize.min.js', array( 'angular' ) );
+		wp_register_script( 'angular-route', plugin_dir_url( __FILE__ ) . 'js/lib/angular-route.min.js', array( 'angular' ) );
 		wp_register_script( 'angular-youtube', plugin_dir_url( __FILE__ ) . 'js/lib/angular-youtube-embed.js', array(
 			'angular',
 			'angular-resource',
 			'angular-sanitize'
 		) );
-		wp_register_script( 'iframe-api', plugin_dir_url( __FILE__ ) . 'js/app/iframe_api.js' );
+		wp_register_script( 'iframe-api', plugin_dir_url( __FILE__ ) . 'js/lib/iframe_api.js' );
 		wp_register_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'js/lib/jquery-ui/jquery-ui.min.js', array( 'jquery' ) );
 		wp_register_script( 'bootstrap', plugin_dir_url( __FILE__ ) . 'js/lib/bootstrap.min.js' );
 		wp_register_script( 'ui-bootstrap-tpls', plugin_dir_url( __FILE__ ) . 'js/lib/ui-bootstrap-tpls.min.js', array( 'bootstrap' ) );
@@ -73,6 +69,7 @@ class RelaPlugin {
 			'main',
 			'wp-resource-factory'
 		) );
+		wp_register_script( 'shared-service', plugin_dir_url( __FILE__ ) . 'js/app/factory/sharedService.js', array( 'main') );
 		wp_register_script( 'post-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/postController.js', array( 'main' ) );
 		wp_register_script( 'tab-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/tabController.js', array( 'main' ) );
 		wp_register_script( 'youtube-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/youtubeController.js', array(
@@ -92,6 +89,9 @@ class RelaPlugin {
 			'wp-resource-factory',
 			'data-service'
 		) );
+		wp_register_script( 'preview-controller', plugin_dir_url( __FILE__ ) . 'js/app/controller/previewController.js', array(
+			'main'
+		) );
 		wp_register_script( 'wp-resource-factory', plugin_dir_url( __FILE__ ) . 'js/app/factory/wpResourceFactory.js', array(
 			'main',
 			'tab-controller'
@@ -105,6 +105,7 @@ class RelaPlugin {
 		wp_enqueue_script( 'angular' );
 		wp_enqueue_script( 'angular-satitaize' );
 		wp_enqueue_script( 'angular-resource' );
+		wp_enqueue_script( 'angular-route' );
 		wp_enqueue_script( 'angular-youtube' );
 		wp_enqueue_script( 'bootstrap' );
 		wp_enqueue_script( 'ui-bootstrap-tpls' );
@@ -119,24 +120,15 @@ class RelaPlugin {
 		wp_enqueue_script( 'post-controller' );
 		wp_enqueue_script( 'items-view-controller' );
 		wp_enqueue_script( 'home-controller' );
+		wp_enqueue_script( 'preview-controller' );
 		wp_enqueue_script( 'wp-resource-factory' );
 		wp_enqueue_script( 'data-service' );
+		wp_enqueue_script( 'shared-service' );
 
 		//CSS
 		wp_enqueue_style( 'bootstrap', plugin_dir_url( __FILE__ ) . 'css/bootstrap.min.css' );
 		wp_enqueue_style( 'rela-mypage-style', plugin_dir_url( __FILE__ ) . 'css/style.css' );
 	}
-
-//	function angular_views(){
-//		wp_localize_script(
-//			'angular-views',
-//			'myLocalized',
-//			array(
-//				'partials' => trailingslashit( get_template_directory_uri() ) . 'partials/'
-//			)
-//		);
-//	}
-
 
 	//create a page when this plugin is activated
 	function insertMypage() {
@@ -155,31 +147,23 @@ class RelaPlugin {
 		wp_insert_post( $post, false );
 	}
 
-	//shortcode to render inserted page views
 
 	/**
-	 * @return string
+	 *
+	 * shortcode to render inserted page views
 	 */
 	function my_shortcode() {
-		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/mypage.html' );
+
+//		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/mypage.html' );
+		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/routes.html' );
 
 		return $content;
 	}
 
-	function add_shortcode_mypage() {
-		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/partials/home.html' );
 
-		return $content;
-	}
-
-	function add_shortcode_preview() {
-		$content = file_get_contents( plugin_dir_path( __FILE__ ) . '/views/partials/preview.html' );
-
-		return $content;
-	}
-
+	//wp nonceを埋め込む
 	function localize_nonce() {
-
+		//main.jsに適用する
 		wp_localize_script(
 			'main',
 			'wpAngularVars',
@@ -194,7 +178,7 @@ class RelaPlugin {
 		wp_localize_script( 'main',
 			'myLocalizedViews',
 			array(
-				'views' =>  plugin_dir_url( __FILE__ ). '/views'
+				'views' =>  plugin_dir_url( __FILE__ ). '/views/'
 			)
 		);
 	}

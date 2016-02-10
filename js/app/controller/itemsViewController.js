@@ -5,7 +5,6 @@
 /* global angular */
 (function() {
 
-	//youtubeのタブのコントローラー
 	angular.module('UserPosts')
 		.controller('itemsViewController',itemsViewController);
 

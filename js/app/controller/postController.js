@@ -16,21 +16,16 @@
         vm.desc = null;
 
         //メソッド一覧
-        vm.getPosts = getPosts;
+        vm.getPosts = dataService.getAllPosts;
+        //vm.getPosts = getPosts;
         vm.sendPost = sendPost;
         //vm.updatePost = updatePost;
         vm.updateMetaField = updateMetaField;
+
         //TODO：個別削除
         //vm.deleteMetaField = deleteMetaField;
         //TODO：投稿全体の削除
         //vm.deletePost = deletePost;
-
-        function getPosts() {
-            wpPostResource.query({}, function (data) {
-                vm.posts = data;
-                console.log(data);
-            });
-        }
 
         function sendPost(status, head) {
             var items = vm.items;

@@ -15,8 +15,6 @@ class RestAPIEndPoint {
 		// カスタム投稿タイプを追加
 		add_action( 'init', array( $this, 'add_custom_post_type' ), 30 );
 		add_action( 'rest_insert_' . POST_TYPE, array( $this, 'add_custom_field' ), 10, 3 );
-//		add_action( 'rest_insert_post', array( $this, 'update_custom_field' ), 10, 3 );
-//		add_action( 'rest_insert_post', array( $this, 'delete_custom_field' ), 10, 3 );
 	}
 
 	//create new Endpoint for WP REST API
@@ -105,8 +103,9 @@ class RestAPIEndPoint {
 		$unique     = false;
 
 		if ( true == $creating ) {
-			//creating new
+			//creating new post_meta
 			foreach ( $json->items as $item ) {
+				//TODO サニタイズ、エスケープしてから登録
 				$key   = $item->type;
 				$value = $item->content;
 				$id    = add_post_meta( $post->ID, $key, $value, $unique );

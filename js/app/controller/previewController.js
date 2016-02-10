@@ -4,13 +4,13 @@
 
 /* global angular */
 (function () {
-    //'use strict';
-    //var app = angular.module('UserPosts');
-    //app.controller('previewController', previewController);
-    //
-    //function previewController($scope, wpPostResource) {
-    //
-    //}
+    'use strict';
+    var app = angular.module('UserPosts');
+    app.controller('previewController', previewController);
+
+    function previewController($scope) {
+
+    }
     //function homeController($scope, $window, wpPostResource) {
     //	var vm = this;
     //	//メソッド一覧

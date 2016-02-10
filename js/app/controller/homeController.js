@@ -15,19 +15,32 @@
      * @param $scope
      * @param $rootScope
      * @param $window
-     * @param wpPostResource:
+     * @param wpPostResource: $resource
      * @param dataService :データ取得関連メソッド
      */
-    function homeController($scope,$rootScope, $window, wpPostResource, dataService) {
+    homeController.$inject = ['$scope', '$window', '$location', 'wpPostResource', 'dataService','sharedService'];
+    function homeController($scope, $window, $location, wpPostResource, dataService,sharedService) {
         var vm = $scope;
-        var root=$rootScope;
-        root.postData= {
-            publish: [],
-            draft: []
+        var posts = dataService.mockData().getData();
+        vm.$parent.postData = vm.postData = {
+            publish: posts.publish,
+            draft: posts.draft
+        };
+        console.log(vm.postData);
+
+
+        vm.shareData = function (mode,post) {
+            //vm.$parent.sharedPost = post;
+            if(mode==='edit'){
+                sharedService.setData(post);
+                $location.path('/mypage/edit');
+            }else if(mode==='preview'){
+                sharedService.setData(post);
+                $location.path('/preview');
+
+            }
         };
 
-        //メソッド一覧
-        vm.fetchPosts = fetchPosts;
         vm.delete = function (post_id) {
             if ($window.confirm('削除してよろしいですか？')) {
                 deletePost(post_id, function (result) {
@@ -37,23 +50,20 @@
             }
         };
 
-
-        fetchPosts();
-
-        //////////////
+        ///////////////////////////////////
+        // //functions definitions below
 
         function fetchPosts() {
             vm.spinner = true;
 
             dataService.getPublishPosts(function (data) {
-                root.postData.publish=data;
+                vm.$parent.postData.publish = data;
                 vm.spinner = false;
                 console.log(data);
             });
 
             dataService.getDraftPosts(function (data) {
-                root.postData.draft=data;
-                //vm.spinner = false;
+                vm.$parent.postData.draft = data;
                 console.log(data);
             });
 
@@ -65,5 +75,6 @@
                 console.log(result);
             });
         }
+
     }
 })();
