@@ -21,8 +21,10 @@
 
     app.factory('wpPostMeta', function ($resource) {
         return $resource(resource + '/wp-json/wp/v2/userpost/:parentId/meta/:id',
-            {parentId: '@parentId',
-            id:'@id'}
+            {
+                parentId: '@parentId',
+                id: '@id'
+            }
         );
     });
 

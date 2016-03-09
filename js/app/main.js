@@ -67,13 +67,16 @@
                 desc:post.content.rendered
             };
 
-            vm.items = getMetaById(post.id);
-            console.log(vm.items);
+            //vm.items = getMetaById(post.id);
+            //console.log(vm.items);
+            getMetaById(post.id,function(data){
+                vm.items=data;
+            });
         }
 
         ///////////////////////////////
 
-        function getMetaById(postId) {
+        function getMetaById(postId,callback) {
             vm.edit = true;
             vm.loading = true;
             var items=[];
@@ -88,7 +91,8 @@
                     items.push(item);
                 });
                 vm.loading = false;
-                return items;
+                callback(items);
+                //return items;
             });
         }
 
