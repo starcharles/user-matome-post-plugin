@@ -8,7 +8,7 @@
     'use strict';
     var app = angular.module('UserPosts');
 
-    dataService.$inject=['wpPostResource', 'wpPostMeta'];
+    dataService.$inject = ['wpPostResource', 'wpPostMeta'];
     app.factory('dataService', dataService);
 
     function dataService(wpPostResource, wpPostMeta) {
@@ -18,6 +18,7 @@
             getDraftPosts: getDraftPosts,
             getPostById: getPostById,
             getMetaField: getMetaField,
+            updateMetaField: updateMetaField,
             getUser: getUser,
             mockData: mockData,
 
@@ -81,6 +82,16 @@
                 });
         }
 
+        function updateMetaField(postId, metaId, item, callback) {
+
+            wpPostMeta.query({parentId: id})
+                .$promise.then(function (data) {
+                    callback(data);
+                })
+                .catch(function (err) {
+                    throw new Error('Error:failed to get PostMeta. :' + err);
+                });
+        }
 
         function getUser() {
 
@@ -349,7 +360,7 @@
                 }]
             };
             return {
-                getData: function(){
+                getData: function () {
                     return data;
                 }
             };
